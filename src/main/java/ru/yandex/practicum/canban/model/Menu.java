@@ -1,3 +1,5 @@
+package main.java.ru.yandex.practicum.canban.model;
+
 public class Menu {
     public static void printMenu() {
         System.out.println("Получение списка всех задач: 1");
