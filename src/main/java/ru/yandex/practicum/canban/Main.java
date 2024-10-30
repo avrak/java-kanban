@@ -1,6 +1,8 @@
 package main.java.ru.yandex.practicum.canban;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 
 import main.java.ru.yandex.practicum.canban.model.*;
@@ -12,7 +14,7 @@ public class Main {
         System.out.println("Поехали!");
 
         Scanner scanner = new Scanner(System.in);
-        TaskManager taskManager = new TaskManager(scanner);
+        TaskManager taskManager = new TaskManager();
 
 
         while (true) {
@@ -21,29 +23,41 @@ public class Main {
             String name;
             String description;
             Integer taskId;
+            TaskType taskType;
             System.out.print("Введите ваш выбор: ");
             int whatToDo = scanner.nextInt();
+            System.out.println("..........");
 
             switch (whatToDo) {
                 case 1: // Получение списка всех задач: 1
-                    for (Integer id : taskManager.getTasks().keySet()) {
-                        System.out.println(taskManager.getTask(id));
+                    List<Task> tasks = taskManager.getTasks();
+                    if (!tasks.isEmpty()) {
+                        System.out.println(tasks);
                     }
-                    for (Integer id : taskManager.getEpics().keySet()) {
-                        System.out.println(taskManager.getEpic(id));
+                    List<Epic> epics = taskManager.getEpics();
+                    if (!epics.isEmpty()) {
+                        System.out.println(epics);
                     }
-                    for (Integer id : taskManager.getSubTasks().keySet()) {
-                        System.out.println(taskManager.getSubTask(id));
+                    List<SubTask> subTasks = taskManager.getSubTasks();
+                    if (!subTasks.isEmpty()) {
+                        System.out.println(subTasks);
                     }
                     break;
                 case 2: // Удаление всех задач: 2
-                    System.out.print("Подтвердите удаление всех задач (y/n): ");
-                    if (scanner.next().equals("y")) {
-                        //taskManager.clearAllTasks();
-                        taskManager.deleteTasks();
-                        taskManager.deleteEpics();
-                        taskManager.deleteSubTasks();
-                        System.out.println("Все задачи удалены.");
+                    taskType = getTaskType(scanner);
+                    if (taskType == null) {
+                        System.out.println("Неизвестный тип задачи, попробуйте ещё раз");
+                        break;
+                    }
+                    switch (taskType) {
+                        case TASK:
+                            taskManager.deleteTasks();
+                            break;
+                        case SUBTASK:
+                            taskManager.deleteSubTasks();
+                            break;
+                        case EPIC:
+                            taskManager.deleteEpics();
                     }
                     break;
                 case 3: // Получение задачи по идентификатору: 3
@@ -65,7 +79,6 @@ public class Main {
                     break;
                 case 4: // Создать задачу: 4
                     //taskManager.addTask();
-                    TaskType taskType;
                     int epicId = 0;
                     name = setTaskName(scanner);
                     description = setTaskDescription(scanner);
@@ -77,7 +90,7 @@ public class Main {
                     }
 
                     if (taskType == TaskType.SUBTASK) {
-                        epicId = setEpicId(scanner, taskManager.getEpics());
+                        epicId = setEpicId(scanner, taskManager);
                         if (epicId == -1) {
                             System.out.println("Эпик не найден, попробуйте ещё раз");
                             break;
@@ -120,7 +133,6 @@ public class Main {
                         updatingSubTask.setDescription(setTaskDescription(scanner));
                         updatingSubTask.setStatus(setTaskStatus(scanner));
                         taskManager.updateSubtask(updatingSubTask);
-                        taskManager.updateEpicStatus(taskManager.getEpic(updatingSubTask.getEpicId()));
                     } else {
                         System.out.println("Задача не найдена");
                     }
@@ -166,10 +178,10 @@ public class Main {
         return null;
     }
 
-    public static Integer setEpicId(Scanner scanner, HashMap<Integer, Epic> epicsList) {
+    public static Integer setEpicId(Scanner scanner, TaskManager taskManager) {
         System.out.print("Введите ID эпика: ");
         int epicId = scanner.nextInt();
-        if (epicsList.get(epicId) != null) {
+        if (taskManager.getEpic(epicId) != null) {
             return epicId;
         } else {
             return -1;
