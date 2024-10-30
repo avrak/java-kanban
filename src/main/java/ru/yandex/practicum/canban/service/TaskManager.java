@@ -17,7 +17,7 @@ public class TaskManager {
 
     private void updateEpicStatus(Epic epic) {
         // Нет подзадач - NEW
-        if (epic.getSubTasksIds().size() == 0) {
+        if (epic.getSubTasksIds().isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
         }
         int tasksInNew = 0;
@@ -47,23 +47,14 @@ public class TaskManager {
     }
 
     public List<Task> getTasks() {
-        if (tasksList == null) {
-            return null;
-        }
         return new ArrayList<Task>(tasksList.values());
     }
 
     public List<SubTask> getSubTasks() {
-        if (subTasksList == null) {
-            return null;
-        }
         return new ArrayList<SubTask>(subTasksList.values());
     }
 
     public List<Epic> getEpics() {
-        if (epicsList == null) {
-            return null;
-        }
         return new ArrayList<Epic>(epicsList.values());
     }
 
@@ -108,12 +99,7 @@ public class TaskManager {
     }
 
     public void updateEpic(Epic epic) {
-        ArrayList<Integer> subTasksIds = new ArrayList<>();
-        subTasksIds = (ArrayList<Integer>) epic.getSubTasksIds().clone();
         epicsList.put(epic.getTaskId(), epic);
-        for (Integer subTaskId : subTasksIds) {
-            epic.addSubTaskId(subTaskId);
-        }
     }
 
     public void updateSubtask(SubTask subTask) {
@@ -145,20 +131,14 @@ public class TaskManager {
 
     public void deleteSubTasks() {
         subTasksList.clear();
-        for (Integer epicId : epicsList.keySet()) {
-            Epic epic = epicsList.get(epicId);
+        for (Epic epic : epicsList.values()) {
             epic.deleteAllSubTasksIds();
             updateEpicStatus(epic);
         }
     }
 
     public void deleteEpics() {
-        for (Integer epicId : epicsList.keySet()) {
-            ArrayList<Integer> subTasksIds = epicsList.get(epicId).getSubTasksIds();
-            for (int i = 0; i < subTasksIds.size(); i++) {
-                epicsList.get(epicId).deleteSubTask(i);
-            }
-        }
+        subTasksList.clear();
         epicsList.clear();
     }
 }
