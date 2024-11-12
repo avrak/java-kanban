@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import main.java.ru.yandex.practicum.canban.model.*;
-import main.java.ru.yandex.practicum.canban.service.TaskManager;
+import main.java.ru.yandex.practicum.canban.service.InMemoryTaskManager;
 
 public class Main {
 
@@ -14,7 +14,7 @@ public class Main {
         System.out.println("Поехали!");
 
         Scanner scanner = new Scanner(System.in);
-        TaskManager taskManager = new TaskManager();
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
 
         while (true) {
@@ -110,7 +110,10 @@ public class Main {
                             SubTask newSubTask = new SubTask(TaskType.SUBTASK, epicId, name, description);
                             taskManager.addNewSubtask(newSubTask);
                             break;
+                        case HISTORY:
+                            System.out.println(taskManager.getHistory());
                     }
+
 
                     break;
                 case 5: // Обновить задачу: 5
@@ -157,6 +160,7 @@ public class Main {
             System.out.println("----------");
         }
     }
+
     public static String setTaskName(Scanner scanner) {
         System.out.print("Введите название задачи: ");
         return scanner.next();
@@ -178,7 +182,7 @@ public class Main {
         return null;
     }
 
-    public static Integer setEpicId(Scanner scanner, TaskManager taskManager) {
+    public static Integer setEpicId(Scanner scanner, InMemoryTaskManager taskManager) {
         System.out.print("Введите ID эпика: ");
         int epicId = scanner.nextInt();
         if (taskManager.getEpic(epicId) != null) {
