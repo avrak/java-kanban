@@ -1,15 +1,17 @@
 package main.java.ru.yandex.practicum.canban.service;
 
+import interfaces.TaskManager;
 import main.java.ru.yandex.practicum.canban.model.Epic;
 import main.java.ru.yandex.practicum.canban.model.SubTask;
 import main.java.ru.yandex.practicum.canban.model.Task;
 import main.java.ru.yandex.practicum.canban.model.TaskStatus;
 
+import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryTaskManager implements TaskManager{
+public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> tasksList;
     private HashMap<Integer, Epic> epicsList;
     private HashMap<Integer, SubTask> subTasksList;
@@ -88,12 +90,14 @@ public class InMemoryTaskManager implements TaskManager{
     @Override
     public SubTask getSubTask(int id) {
         SubTask subTask = subTasksList.get(id);
+        inMemoryHistoryManager.add(subTask);
         return subTask;
     }
 
     @Override
     public Epic getEpic(int id) {
         Epic epic = epicsList.get(id);
+        inMemoryHistoryManager.add(epic);
         return epic;
     }
 
@@ -173,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager{
     }
 
     @Override
-    public ArrayList<Task> getHistory() {
+    public LinkedList<Task> getHistory() {
         return inMemoryHistoryManager.getHistory();
     }
 }

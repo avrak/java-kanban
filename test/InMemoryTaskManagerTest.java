@@ -1,8 +1,10 @@
 import main.java.ru.yandex.practicum.canban.model.*;
 import main.java.ru.yandex.practicum.canban.service.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.testng.annotations.Test;
 
@@ -16,14 +18,16 @@ public class InMemoryTaskManagerTest {
     private static SubTask subTask;
     private static Task task;
 
-    protected void beforeEach() {
-        taskManager = new InMemoryTaskManager();
-        epic = new Epic(TaskType.EPIC, "new Epic test", "Test addNewTask description");
-        taskManager.addNewEpic(epic);
-        subTask = new SubTask(TaskType.SUBTASK, epic.getTaskId(),"new Epic test", "Test addNewTask description");
-        taskManager.addNewSubtask(subTask);
-        task = new Task(TaskType.TASK, "new Task test", "Test addNewTask description");
-        taskManager.addNewTask(task);
+    @BeforeEach
+    public void beforeEach() {
+        System.out.println("Before each...");
+        this.taskManager = new InMemoryTaskManager();
+        this.epic = new Epic(TaskType.EPIC, "new Epic test", "Test addNewTask description");
+        this.taskManager.addNewEpic(epic);
+        this.subTask = new SubTask(TaskType.SUBTASK, epic.getTaskId(),"new addNewTask test", "Test addNewTask description");
+        this.taskManager.addNewSubtask(subTask);
+        this.task = new Task(TaskType.TASK, "new Task test", "Test addNewTask description");
+        this.taskManager.addNewTask(task);
 
     }
 
@@ -47,7 +51,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void addNewEpic() {
-
         beforeEach();
 
         final int epicId = epic.getTaskId();
@@ -66,7 +69,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void addNewSubtask() {
-
         beforeEach();
 
         final int subTaskId = subTask.getTaskId();
@@ -85,7 +87,6 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void addSubTaskAsEpic() {
-
         beforeEach();
 
         final int subTaskId = subTask.getTaskId();
@@ -97,6 +98,8 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void checkManagers() {
+        beforeEach();
+
         Managers managers = new Managers();
 
         assertNotNull(managers.getDefaulf(), "Менеджер задач не создан.");
@@ -105,15 +108,17 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void checkHistory() {
-
         beforeEach();
 
         Epic epicInHistory = taskManager.getEpic(epic.getTaskId());
         SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
         Task taskInHistory = taskManager.getTask(task.getTaskId());
 
-        assertNotNull(taskManager.getHistory().contains(epic), "Эпик не найден в истории.");
-        assertNotNull(taskManager.getHistory().contains(subTask), "Подзадача не найдена в истории.");
-        assertNotNull(taskManager.getHistory().contains(task), "Задача не найден в истории.");
+        LinkedList<Task> tasksInHistory = taskManager.getHistory();
+
+        assertTrue(tasksInHistory.contains(epicInHistory), "Эпик не найден в истории.");
+        assertTrue(tasksInHistory.contains(subTaskInHistory), "Подзадача не найдена в истории.");
+        assertTrue(tasksInHistory.contains(taskInHistory), "Задача не найдена в истории.");
+
     }
 }

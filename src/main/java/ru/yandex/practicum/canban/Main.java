@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 
+import main.java.ru.yandex.practicum.canban.service;
 import main.java.ru.yandex.practicum.canban.model.*;
-import main.java.ru.yandex.practicum.canban.service.InMemoryTaskManager;
+import main.java.ru.yandex.practicum.canban.service.*;
 
 public class Main {
 
