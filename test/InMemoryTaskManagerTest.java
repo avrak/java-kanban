@@ -4,7 +4,6 @@ import main.java.ru.yandex.practicum.canban.service.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.testng.annotations.Test;
 
@@ -20,7 +19,6 @@ public class InMemoryTaskManagerTest {
 
     @BeforeEach
     public void beforeEach() {
-        System.out.println("Before each...");
         this.taskManager = new InMemoryTaskManager();
         this.epic = new Epic(TaskType.EPIC, "new Epic test", "Test addNewTask description");
         this.taskManager.addNewEpic(epic);
