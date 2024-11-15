@@ -1,27 +1,27 @@
 package main.java.ru.yandex.practicum.canban.service;
 
+import interfaces.HistoryManager;
 import interfaces.TaskManager;
 import main.java.ru.yandex.practicum.canban.model.Epic;
 import main.java.ru.yandex.practicum.canban.model.SubTask;
 import main.java.ru.yandex.practicum.canban.model.Task;
 import main.java.ru.yandex.practicum.canban.model.TaskStatus;
 
-import java.util.LinkedList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private HashMap<Integer, Task> tasksList;
-    private HashMap<Integer, Epic> epicsList;
-    private HashMap<Integer, SubTask> subTasksList;
-    private InMemoryHistoryManager inMemoryHistoryManager;
+    private final HashMap<Integer, Task> tasksList;
+    private final HashMap<Integer, Epic> epicsList;
+    private final HashMap<Integer, SubTask> subTasksList;
+    private final HistoryManager inMemoryHistoryManager;
 
     public InMemoryTaskManager() {
         tasksList = new HashMap<>();
         epicsList = new HashMap<>();
         subTasksList = new HashMap<>();
-        inMemoryHistoryManager = new InMemoryHistoryManager();
+        inMemoryHistoryManager = Managers.getDefaultHistory();
     }
 
     private void updateEpicStatus(Epic epic) {
@@ -177,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public LinkedList<Task> getHistory() {
-        return inMemoryHistoryManager.getHistory();
+    public List<Task> getHistory() {
+        return new ArrayList<>(inMemoryHistoryManager.getHistory());
     }
 }

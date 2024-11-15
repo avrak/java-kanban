@@ -3,6 +3,7 @@ package main.java.ru.yandex.practicum.canban.service;
 import interfaces.HistoryManager;
 import main.java.ru.yandex.practicum.canban.model.Task;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,6 +19,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
+        if (task == null) {
+            return;
+        }
         lastViewedTenTasks.add(LAST_VIEWED, task);
         if(lastViewedTenTasks.size() > TO_REMOVE) {
             lastViewedTenTasks.remove(TO_REMOVE);
@@ -25,7 +29,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public LinkedList<Task> getHistory() {
-        return (LinkedList<Task>) lastViewedTenTasks;
+    public List<Task> getHistory() {
+        return new ArrayList<Task>(lastViewedTenTasks);
     }
 }

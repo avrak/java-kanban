@@ -1,6 +1,7 @@
 import main.java.ru.yandex.practicum.canban.model.*;
 import main.java.ru.yandex.practicum.canban.service.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -112,7 +113,7 @@ public class InMemoryTaskManagerTest {
         SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
         Task taskInHistory = taskManager.getTask(task.getTaskId());
 
-        LinkedList<Task> tasksInHistory = taskManager.getHistory();
+        ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
 
         assertTrue(tasksInHistory.contains(epicInHistory), "Эпик не найден в истории.");
         assertTrue(tasksInHistory.contains(subTaskInHistory), "Подзадача не найдена в истории.");
