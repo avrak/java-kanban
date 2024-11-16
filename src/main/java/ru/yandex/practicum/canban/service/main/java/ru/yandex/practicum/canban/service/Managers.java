@@ -5,7 +5,9 @@ import interfaces.TaskManager;
 
 public class Managers {
 
-   public TaskManager getDefaulf() {
+    public Managers() {};
+
+    public static TaskManager getDefaulf() {
         return new InMemoryTaskManager();
     };
     public static HistoryManager getDefaultHistory() {
