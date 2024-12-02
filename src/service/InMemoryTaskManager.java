@@ -1,15 +1,16 @@
-package main.java.ru.yandex.practicum.canban.service;
+package service;
 
 import interfaces.HistoryManager;
 import interfaces.TaskManager;
-import main.java.ru.yandex.practicum.canban.model.Epic;
-import main.java.ru.yandex.practicum.canban.model.SubTask;
-import main.java.ru.yandex.practicum.canban.model.Task;
-import main.java.ru.yandex.practicum.canban.model.TaskStatus;
+import model.Epic;
+import model.SubTask;
+import model.Task;
+import model.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 
 public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Task> tasksList;
@@ -82,23 +83,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(int id) {
-        Task task = tasksList.get(id);
-        inMemoryHistoryManager.add(task);
-        return task;
+        return tasksList.get(id);
     }
 
     @Override
     public SubTask getSubTask(int id) {
-        SubTask subTask = subTasksList.get(id);
-        inMemoryHistoryManager.add(subTask);
-        return subTask;
+        return subTasksList.get(id);
     }
 
     @Override
     public Epic getEpic(int id) {
-        Epic epic = epicsList.get(id);
-        inMemoryHistoryManager.add(epic);
-        return epic;
+        return epicsList.get(id);
     }
 
     @Override
@@ -138,13 +133,16 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(int id) {
         tasksList.remove(id);
+        inMemoryHistoryManager.remove(id);
     }
 
     @Override
     public void deleteEpic(int id) {
         ArrayList<Integer> subTasksIds = epicsList.remove(id).getSubTasksIds();
+        inMemoryHistoryManager.remove(id);
         for (Integer subTaskId : subTasksIds) {
             subTasksList.remove(subTaskId);
+            inMemoryHistoryManager.remove(subTaskId);
         }
     }
 
@@ -154,6 +152,7 @@ public class InMemoryTaskManager implements TaskManager {
         subTasksList.remove(id);
         epic.deleteSubTask(id);
         updateEpicStatus(epic);
+        inMemoryHistoryManager.remove(id);
     }
 
     @Override
@@ -180,4 +179,35 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Task> getHistory() {
         return new ArrayList<>(inMemoryHistoryManager.getHistory());
     }
+
+    @Override
+    public Task viewTask(int id) {
+        Task task = tasksList.get(id);
+        if (task != null) {
+            inMemoryHistoryManager.remove(id);
+            inMemoryHistoryManager.add(task);
+        }
+        return task;
+    }
+
+    @Override
+    public SubTask viewSubTask(int id) {
+        SubTask subTask = subTasksList.get(id);
+        if (subTask != null) {
+            inMemoryHistoryManager.remove(id);
+            inMemoryHistoryManager.add(subTask);
+        }
+        return subTask;
+    }
+
+    @Override
+    public Epic viewEpic(int id) {
+        Epic epic = epicsList.get(id);
+        if (epic != null) {
+            inMemoryHistoryManager.remove(id);
+            inMemoryHistoryManager.add(epic);
+        }
+        return epic;
+    }
+
 }

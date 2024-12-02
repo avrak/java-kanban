@@ -1,5 +1,5 @@
-import main.java.ru.yandex.practicum.canban.model.*;
-import main.java.ru.yandex.practicum.canban.service.*;
+import model.*;
+import service.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,11 +97,33 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void checkHistory() {
+    public void checkRemoveTask() {
 
-        Epic epicInHistory = taskManager.getEpic(epic.getTaskId());
-        SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
-        Task taskInHistory = taskManager.getTask(task.getTaskId());
+        taskManager.deleteTask(task.getTaskId());
+        assertNull(taskManager.getSubTask(task.getTaskId()), "Задача не был удалена");
+    }
+
+    @Test
+    public void checkRemoveEpic() {
+
+        taskManager.deleteEpic(epic.getTaskId());
+        assertNull(taskManager.getEpic(epic.getTaskId()), "Эпик не был удалён");
+        assertNull(taskManager.getSubTask(subTask.getTaskId()), "Подзадача не была удалена вместе с эпиком");
+    }
+
+    @Test
+    public void checkRemoveSubtask() {
+
+        taskManager.deleteSubTask(subTask.getTaskId());
+        assertNull(taskManager.getSubTask(subTask.getTaskId()), "Подзадача не был удалена");
+    }
+
+    @Test
+    public void checkHistoryExists() {
+
+        Epic epicInHistory = taskManager.viewEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.viewTask(task.getTaskId());
 
         ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
 
@@ -110,4 +132,55 @@ public class InMemoryTaskManagerTest {
         assertTrue(tasksInHistory.contains(taskInHistory), "Задача не найдена в истории.");
 
     }
+
+    @Test
+    public void checkHistoryCount() {
+
+        Epic epicInHistory = taskManager.viewEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.viewTask(task.getTaskId());
+
+        taskInHistory = taskManager.viewTask(task.getTaskId());
+        subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
+        epicInHistory = taskManager.viewEpic(epic.getTaskId());
+
+        ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
+
+        assertEquals(3, tasksInHistory.size(), "Найдено больше одного упоминания в истории.");
+    }
+
+    @Test
+    public void checkHistoryOrder() {
+
+        Epic epicInHistory = taskManager.viewEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.viewTask(task.getTaskId());
+
+        taskInHistory = taskManager.viewTask(task.getTaskId());
+        subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
+        epicInHistory = taskManager.viewEpic(epic.getTaskId());
+
+        ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
+
+        assertEquals(epicInHistory.getTaskId(), tasksInHistory.get(0).getTaskId(), "Неверный порядок в истории просмотров");
+        assertEquals(subTaskInHistory.getTaskId(), tasksInHistory.get(1).getTaskId(), "Неверный порядок в истории просмотров");
+        assertEquals(taskInHistory.getTaskId(), tasksInHistory.get(2).getTaskId(), "Неверный порядок в истории просмотров");
+    }
+
+    @Test
+    public void checkHistoryDelete() {
+
+        Epic epicInHistory = taskManager.viewEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.viewTask(task.getTaskId());
+
+        taskManager.deleteEpic(epic.getTaskId());
+
+        ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
+
+        assertFalse(tasksInHistory.contains(epicInHistory), "Эпик не удалён из истории.");
+        assertFalse(tasksInHistory.contains(subTaskInHistory), "Подзадача не удалена из истории.");
+
+    }
+
 }

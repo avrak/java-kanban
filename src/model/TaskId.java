@@ -1,4 +1,4 @@
-package main.java.ru.yandex.practicum.canban.model;
+package model;
 
 public class TaskId {
     private static int taskId;
