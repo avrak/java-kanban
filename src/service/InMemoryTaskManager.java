@@ -49,7 +49,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (tasksInNew == 0 && tasksInInProgress == 0 && tasksInDone > 0) {
             epic.setStatus(TaskStatus.DONE);
-        } else if ((tasksInInProgress > 0 || (tasksInNew > 0 && tasksInDone > 0))){
+        } else if ((tasksInInProgress > 0 || (tasksInNew > 0 && tasksInDone > 0))) {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         } else {
             epic.setStatus(TaskStatus.NEW);
