@@ -1,4 +1,4 @@
-package main.java.ru.yandex.practicum.canban.model;
+package model;
 
 import java.util.Objects;
 
@@ -51,12 +51,12 @@ public class Task extends TaskId {
     @Override
     public String toString() {
         return type
-            + "{"
-            + "taskId=" + taskId
-            + ", name='" + name + '\''
-            + ", description='" + description + '\''
-            + ", status=" + status
-            + '}';
+                + "{"
+                + "taskId=" + taskId
+                + ", name='" + name + '\''
+                + ", description='" + description + '\''
+                + ", status=" + status
+                + '}';
     }
 
     @Override

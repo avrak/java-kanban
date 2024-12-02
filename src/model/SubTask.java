@@ -1,4 +1,4 @@
-package main.java.ru.yandex.practicum.canban.model;
+package model;
 
 public class SubTask extends Task {
     private int epicId;
@@ -15,13 +15,13 @@ public class SubTask extends Task {
     @Override
     public String toString() {
         return getType()
-            + "{"
-            + "taskId=" + getTaskId()
-            + ", epicId=" + epicId
-            + ", name='" + getName() + '\''
-            + ", description='" + getDescription() + '\''
-            + ", status=" + getStatus()
-            + '}';
+                + "{"
+                + "taskId=" + getTaskId()
+                + ", epicId=" + epicId
+                + ", name='" + getName() + '\''
+                + ", description='" + getDescription() + '\''
+                + ", status=" + getStatus()
+                + '}';
     }
 
 }

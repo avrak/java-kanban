@@ -1,13 +1,8 @@
-package main.java.ru.yandex.practicum.canban;
+import model.*;
+import service.InMemoryTaskManager;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-
-import main.java.ru.yandex.practicum.canban.service;
-import main.java.ru.yandex.practicum.canban.model.*;
-import main.java.ru.yandex.practicum.canban.service.*;
 
 public class Main {
 
@@ -65,9 +60,9 @@ public class Main {
                     System.out.print("Введите ID задачи: ");
                     taskId = scanner.nextInt();
                     //taskManager.printTask(taskId);
-                    Task  task = taskManager.getTask(taskId);
-                    Epic  epic = taskManager.getEpic(taskId);
-                    SubTask subTask = taskManager.getSubTask(taskId);
+                    Task  task = taskManager.viewTask(taskId);
+                    Epic  epic = taskManager.viewEpic(taskId);
+                    SubTask subTask = taskManager.viewSubTask(taskId);
                     if (task != null) {
                         System.out.println(task);
                     } else if (epic != null ){
@@ -111,10 +106,7 @@ public class Main {
                             SubTask newSubTask = new SubTask(TaskType.SUBTASK, epicId, name, description);
                             taskManager.addNewSubtask(newSubTask);
                             break;
-                        case HISTORY:
-                            System.out.println(taskManager.getHistory());
                     }
-
 
                     break;
                 case 5: // Обновить задачу: 5
@@ -152,6 +144,9 @@ public class Main {
                     } else {
                         System.out.println("Такой задачи нет");
                     }
+                    break;
+                case 7: // История просмотра задач: 7
+                    System.out.println(taskManager.getHistory());
                     break;
                 case 0: // Выход: 0
                     return;

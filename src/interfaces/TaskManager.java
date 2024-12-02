@@ -1,8 +1,10 @@
 package interfaces;
 
-import main.java.ru.yandex.practicum.canban.model.*;
+import model.Epic;
+import model.SubTask;
+import model.Task;
 
-import java.util.*;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -19,6 +21,12 @@ public interface TaskManager {
     SubTask getSubTask(int id);
 
     Epic getEpic(int id);
+
+    Task viewTask(int id);
+
+    SubTask viewSubTask(int id);
+
+    Epic viewEpic(int id);
 
     void addNewTask(Task task);
 

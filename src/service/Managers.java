@@ -1,4 +1,4 @@
-package main.java.ru.yandex.practicum.canban.service;
+package service;
 
 import interfaces.HistoryManager;
 import interfaces.TaskManager;
