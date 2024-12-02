@@ -65,7 +65,7 @@ public class Main {
                     SubTask subTask = taskManager.viewSubTask(taskId);
                     if (task != null) {
                         System.out.println(task);
-                    } else if (epic != null ){
+                    } else if (epic != null) {
                         System.out.println(epic);
                     } else if (subTask != null) {
                         System.out.println(subTask);
@@ -124,7 +124,7 @@ public class Main {
                         updatingEpic.setName(setTaskName(scanner));
                         updatingEpic.setDescription(setTaskDescription(scanner));
                         taskManager.updateEpic(updatingEpic);
-                    } else if(updatingSubTask != null) {
+                    } else if (updatingSubTask != null) {
                         updatingSubTask.setName(setTaskName(scanner));
                         updatingSubTask.setDescription(setTaskDescription(scanner));
                         updatingSubTask.setStatus(setTaskStatus(scanner));
@@ -137,7 +137,7 @@ public class Main {
                     taskId = setTaskId(scanner);
                     if (taskManager.getTask(taskId) != null) {
                         taskManager.deleteTask(taskId);
-                    } else if (taskManager.getEpic(taskId) != null ){
+                    } else if (taskManager.getEpic(taskId) != null) {
                         taskManager.deleteEpic(taskId);
                     } else if (taskManager.getSubTask(taskId) != null) {
                         taskManager.deleteSubTask(taskId);
