@@ -10,7 +10,7 @@ public class Task extends TaskId {
     private String description;
     private TaskStatus status;
 
-    public Task (TaskType type, String name, String description) {
+    public Task(TaskType type, String name, String description) {
         this.taskId = getNewTaskId();
         this.type = type;
         this.name = name;
@@ -26,7 +26,9 @@ public class Task extends TaskId {
         return taskId;
     }
 
-    public TaskType getType() { return type; }
+    public TaskType getType() {
+        return type;
+    }
 
     public void setName(String name) {
         this.name = name;
