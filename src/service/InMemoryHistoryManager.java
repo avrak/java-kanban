@@ -7,7 +7,7 @@ import model.Task;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private final static int END_HISTORY = -1;
+    private static final int END_HISTORY = -1;
 
     private final HistoryListLog historyListLog;
 
