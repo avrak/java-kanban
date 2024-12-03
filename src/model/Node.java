@@ -2,13 +2,13 @@ package model;
 
 public class Node {
     private final Task task;
-    private Integer prevId;
-    private Integer nextId;
+    private Node prevNode;
+    private Node nextNode;
 
-    public Node(Task task, Integer prevId, Integer nextId) {
+    public Node(Task task, Node prevNode, Node nextNode) {
         this.task = task;
-        this.prevId = prevId;
-        this.nextId = nextId;
+        this.prevNode = prevNode;
+        this.nextNode = nextNode;
     }
 
     public Task getTask() {
@@ -23,19 +23,19 @@ public class Node {
         return task.getTaskId();
     }
 
-    public Integer getPrevId() {
-        return prevId;
+    public Node getPrevNode() {
+        return prevNode;
     }
 
-    public Integer getNextId() {
-        return nextId;
+    public Node getNextNode() {
+        return nextNode;
     }
 
-    public void setPrevId(Integer prevId) {
-        this.prevId = prevId;
+    public void setPrevNode(Node prevNode) {
+        this.prevNode = prevNode;
     }
 
-    public void setNextId(Integer nextId) {
-        this.nextId = nextId;
+    public void setNextNode(Node nextNode) {
+        this.nextNode = nextNode;
     }
 }

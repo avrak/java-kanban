@@ -33,12 +33,12 @@ public class InMemoryTaskManagerTest {
 
         final int taskId = task.getTaskId();
 
-        final Task savedTask = taskManager.getTask(taskId);
+        final Task savedTask = taskManager.getTasks().get(taskId);
 
         assertNotNull(savedTask, "Задача не найдена.");
         assertEquals(task, savedTask, "Задачи не совпадают.");
 
-        final List<Task> tasks = taskManager.getTasks();
+        final List<Task> tasks = new ArrayList<>(taskManager.getTasks().values());
 
         assertNotNull(tasks, "Задачи не возвращаются.");
         assertEquals(1, tasks.size(), "Неверное количество задач.");
@@ -55,7 +55,7 @@ public class InMemoryTaskManagerTest {
         assertNotNull(savedEpic, "Задача не найдена.");
         assertEquals(epic, savedEpic, "Задачи не совпадают.");
 
-        final List<Epic> epics = taskManager.getEpics();
+        final List<Epic> epics = new ArrayList<>(taskManager.getEpics().values());
 
         assertNotNull(epics, "Задачи не возвращаются.");
         assertEquals(1, epics.size(), "Неверное количество задач.");
@@ -67,12 +67,12 @@ public class InMemoryTaskManagerTest {
 
         final int subTaskId = subTask.getTaskId();
 
-        final SubTask savedSubTask = taskManager.getSubTask(subTaskId);
+        final SubTask savedSubTask = taskManager.getSubTasks().get(subTaskId);
 
         assertNotNull(savedSubTask, "Задача не найдена.");
         assertEquals(subTask, savedSubTask, "Задачи не совпадают.");
 
-        final List<SubTask> subTasks = taskManager.getSubTasks();
+        final List<SubTask> subTasks = new ArrayList<>(taskManager.getSubTasks().values());
 
         assertNotNull(subTasks, "Задачи не возвращаются.");
         assertEquals(1, subTasks.size(), "Неверное количество задач.");
@@ -84,7 +84,7 @@ public class InMemoryTaskManagerTest {
 
         final int subTaskId = subTask.getTaskId();
 
-        final Epic savedWrongEpic = taskManager.getEpic(subTaskId);
+        final Epic savedWrongEpic = taskManager.getEpics().get(subTaskId);
 
         assertNull(savedWrongEpic, "Найдена подзадача в списке эпиков.");
     }
@@ -100,30 +100,30 @@ public class InMemoryTaskManagerTest {
     public void checkRemoveTask() {
 
         taskManager.deleteTask(task.getTaskId());
-        assertNull(taskManager.getSubTask(task.getTaskId()), "Задача не был удалена");
+        assertNull(taskManager.getSubTasks().get(task.getTaskId()), "Задача не был удалена");
     }
 
     @Test
     public void checkRemoveEpic() {
 
         taskManager.deleteEpic(epic.getTaskId());
-        assertNull(taskManager.getEpic(epic.getTaskId()), "Эпик не был удалён");
-        assertNull(taskManager.getSubTask(subTask.getTaskId()), "Подзадача не была удалена вместе с эпиком");
+        assertNull(taskManager.getEpics().get(epic.getTaskId()), "Эпик не был удалён");
+        assertNull(taskManager.getSubTasks().get(subTask.getTaskId()), "Подзадача не была удалена вместе с эпиком");
     }
 
     @Test
     public void checkRemoveSubtask() {
 
         taskManager.deleteSubTask(subTask.getTaskId());
-        assertNull(taskManager.getSubTask(subTask.getTaskId()), "Подзадача не был удалена");
+        assertNull(taskManager.getSubTasks().get(subTask.getTaskId()), "Подзадача не был удалена");
     }
 
     @Test
     public void checkHistoryExists() {
 
-        Epic epicInHistory = taskManager.viewEpic(epic.getTaskId());
-        SubTask subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
-        Task taskInHistory = taskManager.viewTask(task.getTaskId());
+        Epic epicInHistory = taskManager.getEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.getTask(task.getTaskId());
 
         ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
 
@@ -136,13 +136,13 @@ public class InMemoryTaskManagerTest {
     @Test
     public void checkHistoryCount() {
 
-        Epic epicInHistory = taskManager.viewEpic(epic.getTaskId());
-        SubTask subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
-        Task taskInHistory = taskManager.viewTask(task.getTaskId());
+        Epic epicInHistory = taskManager.getEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.getTask(task.getTaskId());
 
-        taskInHistory = taskManager.viewTask(task.getTaskId());
-        subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
-        epicInHistory = taskManager.viewEpic(epic.getTaskId());
+        taskInHistory = taskManager.getTask(task.getTaskId());
+        subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
+        epicInHistory = taskManager.getEpic(epic.getTaskId());
 
         ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
 
@@ -152,13 +152,13 @@ public class InMemoryTaskManagerTest {
     @Test
     public void checkHistoryOrder() {
 
-        Epic epicInHistory = taskManager.viewEpic(epic.getTaskId());
-        SubTask subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
-        Task taskInHistory = taskManager.viewTask(task.getTaskId());
+        Epic epicInHistory = taskManager.getEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.getTask(task.getTaskId());
 
-        taskInHistory = taskManager.viewTask(task.getTaskId());
-        subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
-        epicInHistory = taskManager.viewEpic(epic.getTaskId());
+        taskInHistory = taskManager.getTask(task.getTaskId());
+        subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
+        epicInHistory = taskManager.getEpic(epic.getTaskId());
 
         ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
 
@@ -170,9 +170,9 @@ public class InMemoryTaskManagerTest {
     @Test
     public void checkHistoryDelete() {
 
-        Epic epicInHistory = taskManager.viewEpic(epic.getTaskId());
-        SubTask subTaskInHistory = taskManager.viewSubTask(subTask.getTaskId());
-        Task taskInHistory = taskManager.viewTask(task.getTaskId());
+        Epic epicInHistory = taskManager.getEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.getTask(task.getTaskId());
 
         taskManager.deleteEpic(epic.getTaskId());
 
@@ -183,4 +183,31 @@ public class InMemoryTaskManagerTest {
 
     }
 
+    @Test
+    public void checkHistoryDeleteAllSubtasks() {
+        SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
+
+        taskManager.deleteSubTasks();
+
+        ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
+
+        assertFalse(tasksInHistory.contains(subTaskInHistory), "Подзадача не удалена из истории при удалении всех задач.");
+    }
+
+    @Test
+    public void checkHistoryDeleteAllTasksAndEpics() {
+
+        Epic epicInHistory = taskManager.getEpic(epic.getTaskId());
+        SubTask subTaskInHistory = taskManager.getSubTask(subTask.getTaskId());
+        Task taskInHistory = taskManager.getTask(task.getTaskId());
+
+        taskManager.deleteEpics();
+        taskManager.deleteTasks();
+
+        ArrayList<Task> tasksInHistory = (ArrayList<Task>) taskManager.getHistory();
+
+        assertFalse(tasksInHistory.contains(epicInHistory), "Эпик не удалён из истории при удалении всех задач.");
+        assertFalse(tasksInHistory.contains(subTaskInHistory), "Подзадача не удалена из истории при удалении всех задач.");
+        assertFalse(tasksInHistory.contains(taskInHistory), "Подзадача не удалена из истории при удалении всех задач.");
+    }
 }

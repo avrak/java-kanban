@@ -4,15 +4,16 @@ import model.Epic;
 import model.SubTask;
 import model.Task;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface TaskManager {
 
-    List<Task> getTasks();
+    HashMap<Integer, Task> getTasks();
 
-    List<SubTask> getSubTasks();
+    HashMap<Integer, SubTask> getSubTasks();
 
-    List<Epic> getEpics();
+    HashMap<Integer, Epic> getEpics();
 
     List<SubTask> getEpicSubTasks(int epicId);
 
@@ -21,12 +22,6 @@ public interface TaskManager {
     SubTask getSubTask(int id);
 
     Epic getEpic(int id);
-
-    Task viewTask(int id);
-
-    SubTask viewSubTask(int id);
-
-    Epic viewEpic(int id);
 
     void addNewTask(Task task);
 
