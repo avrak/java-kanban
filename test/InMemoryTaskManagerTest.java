@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class InMemoryTaskManagerTest {
 
     private InMemoryTaskManager taskManager;
+    private InMemoryHistoryManager historyManager;
     private Epic epic;
     private SubTask subTask;
     private Task task;
@@ -19,6 +20,7 @@ public class InMemoryTaskManagerTest {
     @BeforeEach
     public void beforeEach() {
         taskManager = (InMemoryTaskManager) Managers.getDefaulf();
+        historyManager = (InMemoryHistoryManager) Managers.getDefaultHistory();
         epic = new Epic(TaskType.EPIC, "new Epic test", "Test addNewTask description");
         taskManager.addNewEpic(epic);
         subTask = new SubTask(TaskType.SUBTASK, epic.getTaskId(),"new addNewTask test", "Test addNewTask description");
@@ -209,5 +211,26 @@ public class InMemoryTaskManagerTest {
         assertFalse(tasksInHistory.contains(epicInHistory), "Эпик не удалён из истории при удалении всех задач.");
         assertFalse(tasksInHistory.contains(subTaskInHistory), "Подзадача не удалена из истории при удалении всех задач.");
         assertFalse(tasksInHistory.contains(taskInHistory), "Подзадача не удалена из истории при удалении всех задач.");
+    }
+
+    @Test
+    public void checkHistoryManagerAdd() {
+
+        historyManager.add(task);
+
+        ArrayList<Task> history = (ArrayList<Task>) historyManager.getHistory();
+
+        assertTrue(history.contains(task), "Задача не добавлена в историю");
+    }
+
+    @Test
+    public void checkHistoryManagerRemove() {
+
+        historyManager.add(task);
+        historyManager.remove(task.getTaskId());
+
+        ArrayList<Task> history = (ArrayList<Task>) historyManager.getHistory();
+
+        assertFalse(history.contains(task), "Задача не удалена из истории");
     }
 }

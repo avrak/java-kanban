@@ -15,30 +15,26 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public InMemoryHistoryManager() {
         historyList = new HashMap<>();
-        firstNode = null;
-        lastNode = null;
     }
 
-    protected void linkLast(Task task) {
-        Node newNode = new Node(task, lastNode, null);
+    protected void linkLast(Node node) {
         if (lastNode != null) {
-            lastNode.setNextNode(newNode);
+            lastNode.setNextNode(node);
         }
-        historyList.put(newNode.getId(), newNode);
-        lastNode = newNode;
+        lastNode = node;
 
         if (firstNode == null) {
-            firstNode = newNode;
+            firstNode = node;
         }
     }
 
-    protected void removeNode(Integer taskId) {
-        Node currentNode = historyList.remove(taskId);
-        if (currentNode == null) {
+    private void removeNode(Node node) {
+
+        if (node == null) {
             return;
         }
-        Node prevNode = currentNode.getPrevNode();
-        Node nextNode = currentNode.getNextNode();
+        Node prevNode = node.getPrevNode();
+        Node nextNode = node.getNextNode();
 
         if (prevNode != null) {
             prevNode.setNextNode(nextNode);
@@ -54,16 +50,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     protected List<Task> getTasks() {
-//        ArrayList<Task> nodesList = new ArrayList<>();
-//        Integer taskId = tailTaskId;
-//
-//        while (taskId != END_HISTORY) {
-//            Node node = historyList.get(taskId);
-//            nodesList.add(node.getTask());
-//            taskId = node.getPrevId();
-//        }
-//        return nodesList;
-
         List<Task> tasksList = new ArrayList<>();
         Node node = lastNode;
         while (node != null) {
@@ -75,12 +61,19 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        linkLast(task);
+
+        removeNode(historyList.get(task.getTaskId()));
+
+        Node newNode = new Node(task, lastNode, null);
+
+        historyList.put(newNode.getId(), newNode);
+        linkLast(newNode);
     }
 
     @Override
     public void remove(int id) {
-        removeNode(id);
+        Node node = historyList.get(id);
+        removeNode(node);
     }
 
     @Override
