@@ -1,4 +1,4 @@
-package main.java.ru.yandex.practicum.canban.model;
+package model;
 
 public class Menu {
     public static void printMenu() {
@@ -8,6 +8,7 @@ public class Menu {
         System.out.println("Создать задачу: 4");
         System.out.println("Обновить задачу: 5");
         System.out.println("Удалить задачу по идентификатору: 6");
+        System.out.println("История просмотра задач: 7");
         System.out.println("Выход: 0");
     }
 }
