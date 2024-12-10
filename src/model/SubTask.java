@@ -30,7 +30,7 @@ public class SubTask extends Task {
     }
 
     @Override
-    public String toFileString () {
+    public String toFileString() {
         return String.format("%s,%s", super.toFileString(), epicId);
     }
 
