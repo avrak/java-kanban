@@ -32,7 +32,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
             tmpFile = File.createTempFile(BACKED_FILE_NAME, ".csv");
         } catch (IOException e) {
             System.out.println("Не удалось создать файл: " + e.getMessage());
-        };
+        }
     }
 
     @Override
@@ -129,7 +129,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
     }
 
     @Override
-    public void addNewEpic(Epic epic){
+    public void addNewEpic(Epic epic) {
         super.addNewEpic(epic);
         save();
     }
@@ -163,6 +163,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
         super.deleteTask(id);
         save();
     }
+
     @Override
     public void deleteEpic(int id) {
         super.deleteEpic(id);
