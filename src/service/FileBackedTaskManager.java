@@ -1,7 +1,6 @@
 package service;
 
 import interfaces.FileTaskManager;
-import interfaces.TaskManager;
 import model.*;
 
 import java.io.File;
@@ -15,13 +14,13 @@ import java.util.List;
 import static model.TaskType.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements FileTaskManager {
-    private final int FIRST_TASK_POSITION = 1;
-    private final int TASK_TYPE = 0;
-    private final int TASK_ID = 1;
-    private final int TASK_NAME = 2;
-    private final int TASK_DESCRIPTION = 3;
-    private final int TASK_STATUS = 4;
-    private final int TASK_EPIC_ID = 5;
+    final int FIRST_TASK_POSITION = 1;
+    final int TASK_TYPE = 0;
+    final int TASK_ID = 1;
+    final int TASK_NAME = 2;
+    final int TASK_DESCRIPTION = 3;
+    final int TASK_STATUS = 4;
+    final int TASK_EPIC_ID = 5;
 
     private final String BACKED_FILE_NAME = "backed_file";
     File tmpFile;
@@ -71,6 +70,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
         File file = new File(fileName);
         return file.isFile();
     }
+
     @Override
     public void restore(String fileName) throws ManagerReadException {
         File file = new File(fileName);
@@ -126,31 +126,37 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
         super.addNewTask(task);
         save();
     }
+
     @Override
     public void addNewEpic(Epic epic){
         super.addNewEpic(epic);
         save();
     }
+
     @Override
     public void addNewSubtask(SubTask subTask) {
         super.addNewSubtask(subTask);
         save();
     }
+
     @Override
     public void updateTask(Task task) {
         super.updateTask(task);
         save();
     }
+
     @Override
     public void updateEpic(Epic epic) {
         super.updateEpic(epic);
         save();
     }
+
     @Override
     public void updateSubtask(SubTask subTask) {
         super.updateSubtask(subTask);
         save();
     }
+
     @Override
     public void deleteTask(int id) {
         super.deleteTask(id);
@@ -161,21 +167,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
         super.deleteEpic(id);
         save();
     }
+
     @Override
     public void deleteSubTask(Integer id) {
         super.deleteSubTask(id);
         save();
     }
+
     @Override
     public void deleteTasks() {
         super.deleteTasks();
         save();
     }
+
     @Override
     public void deleteSubTasks() {
         super.deleteSubTasks();
         save();
     }
+
     @Override
     public void deleteEpics() {
         super.deleteEpics();
