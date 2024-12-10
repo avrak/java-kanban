@@ -14,13 +14,13 @@ import java.util.List;
 import static model.TaskType.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements FileTaskManager {
-    final int FIRST_TASK_POSITION = 1;
-    final int TASK_TYPE = 0;
-    final int TASK_ID = 1;
-    final int TASK_NAME = 2;
-    final int TASK_DESCRIPTION = 3;
-    final int TASK_STATUS = 4;
-    final int TASK_EPIC_ID = 5;
+    public static final int FIRST_TASK_POSITION = 1;
+    public static final int TASK_TYPE = 0;
+    public static final int TASK_ID = 1;
+    public static final int TASK_NAME = 2;
+    public static final int TASK_DESCRIPTION = 3;
+    public static final int TASK_STATUS = 4;
+    public static final int TASK_EPIC_ID = 5;
 
     private final String BACKED_FILE_NAME = "backed_file";
     File tmpFile;
