@@ -1,4 +1,4 @@
-package main.java.ru.yandex.practicum.canban.model;
+package model;
 
 import java.util.Objects;
 
@@ -10,7 +10,7 @@ public class Task extends TaskId {
     private String description;
     private TaskStatus status;
 
-    public Task (TaskType type, String name, String description) {
+    public Task(TaskType type, String name, String description) {
         this.taskId = getNewTaskId();
         this.type = type;
         this.name = name;
@@ -26,7 +26,9 @@ public class Task extends TaskId {
         return taskId;
     }
 
-    public TaskType getType() { return type; }
+    public TaskType getType() {
+        return type;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -51,12 +53,12 @@ public class Task extends TaskId {
     @Override
     public String toString() {
         return type
-            + "{"
-            + "taskId=" + taskId
-            + ", name='" + name + '\''
-            + ", description='" + description + '\''
-            + ", status=" + status
-            + '}';
+                + "{"
+                + "taskId=" + taskId
+                + ", name='" + name + '\''
+                + ", description='" + description + '\''
+                + ", status=" + status
+                + '}';
     }
 
     @Override

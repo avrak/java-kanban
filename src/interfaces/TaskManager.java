@@ -1,16 +1,19 @@
 package interfaces;
 
-import main.java.ru.yandex.practicum.canban.model.*;
+import model.Epic;
+import model.SubTask;
+import model.Task;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 
 public interface TaskManager {
 
-    List<Task> getTasks();
+    HashMap<Integer, Task> getTasks();
 
-    List<SubTask> getSubTasks();
+    HashMap<Integer, SubTask> getSubTasks();
 
-    List<Epic> getEpics();
+    HashMap<Integer, Epic> getEpics();
 
     List<SubTask> getEpicSubTasks(int epicId);
 

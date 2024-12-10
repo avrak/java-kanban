@@ -1,4 +1,4 @@
-package main.java.ru.yandex.practicum.canban.model;
+package model;
 
 import java.util.ArrayList;
 
@@ -15,13 +15,14 @@ public class Epic extends Task {
         return subTasksIds;
     }
 
-    public void addSubTaskId (int subTaskId) {
+    public void addSubTaskId(int subTaskId) {
         subTasksIds.add(subTaskId);
     }
 
     public void deleteSubTask(Integer subTaskId) {
         subTasksIds.remove(subTaskId);
     }
+
     public void deleteAllSubTasksIds() {
         subTasksIds.clear();
     }
