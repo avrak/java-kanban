@@ -1,5 +1,6 @@
 package service;
 
+import interfaces.FileTaskManager;
 import interfaces.HistoryManager;
 import interfaces.TaskManager;
 import model.Epic;
@@ -17,12 +18,14 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Epic> epicsList;
     private final HashMap<Integer, SubTask> subTasksList;
     private final HistoryManager inMemoryHistoryManager;
+    //private final FileTaskManager fileBackedTaskManager;
 
     public InMemoryTaskManager() {
         tasksList = new HashMap<>();
         epicsList = new HashMap<>();
         subTasksList = new HashMap<>();
         inMemoryHistoryManager = Managers.getDefaultHistory();
+        //fileBackedTaskManager = Managers.getDefaultFileBacked();
     }
 
     private void updateEpicStatus(Epic epic) {
@@ -205,5 +208,4 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Task> getHistory() {
         return new ArrayList<>(inMemoryHistoryManager.getHistory());
     }
-
 }
