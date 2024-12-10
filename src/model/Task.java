@@ -18,8 +18,8 @@ public class Task extends TaskId {
         this.status = TaskStatus.NEW;
     }
 
-    public Task(TaskType type, String name, String description, int TaskId, String status) {
-        this.taskId = TaskId;
+    public Task(TaskType type, String name, String description, int taskId, String status) {
+        this.taskId = taskId;
         this.type = type;
         this.name = name;
         this.description = description;
