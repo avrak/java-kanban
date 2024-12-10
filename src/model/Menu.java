@@ -9,6 +9,7 @@ public class Menu {
         System.out.println("Обновить задачу: 5");
         System.out.println("Удалить задачу по идентификатору: 6");
         System.out.println("История просмотра задач: 7");
+        System.out.println("Восстановить задачи из файла: 8");
         System.out.println("Выход: 0");
     }
 }

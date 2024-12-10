@@ -1,4 +1,5 @@
 import model.*;
+import service.FileBackedTaskManager;
 import service.InMemoryTaskManager;
 
 import java.util.ArrayList;
@@ -11,7 +12,8 @@ public class Main {
         System.out.println("Поехали!");
 
         Scanner scanner = new Scanner(System.in);
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+//        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        FileBackedTaskManager taskManager = new FileBackedTaskManager();
 
 
         while (true) {
@@ -148,6 +150,15 @@ public class Main {
                     break;
                 case 7: // История просмотра задач: 7
                     System.out.println(taskManager.getHistory());
+                    break;
+                case 8: // Восстановить задачи из файла: 8
+                    System.out.print("Введите название файла с задачами: ");
+                    String fileName = scanner.next();
+                    if (taskManager.checkFile(fileName)) {
+                        taskManager.restore(fileName);
+                    } else {
+                        System.out.println("Такого файла нет");
+                    }
                     break;
                 case 0: // Выход: 0
                     return;
