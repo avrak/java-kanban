@@ -22,7 +22,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
     public static final int TASK_STATUS = 4;
     public static final int TASK_EPIC_ID = 5;
 
-    private final String BACKED_FILE_NAME = "backed_file";
+    public static final String BACKED_FILE_NAME = "backed_file";
+
     File tmpFile;
 
     public FileBackedTaskManager() {
