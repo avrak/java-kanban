@@ -24,19 +24,33 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
 
     public static final String BACKED_FILE_NAME = "backed_file";
 
-    File tmpFile;
+    private File tmpFile;
 
-    public FileBackedTaskManager() {
+    public FileBackedTaskManager(String fileName) {
+        tmpFile = new File(fileName);
+        String[] lines = null;
 
-        try {
-            tmpFile = File.createTempFile(BACKED_FILE_NAME, ".csv");
-        } catch (IOException e) {
-            System.out.println("Не удалось создать файл: " + e.getMessage());
+        if (tmpFile.isFile()) {
+            lines = getLines(fileName);
+        }
+
+        if (lines == null || lines.length <= FIRST_TASK_POSITION) {
+            try {
+                tmpFile = File.createTempFile(BACKED_FILE_NAME, ".csv");
+            } catch (IOException e) {
+                System.out.println("Не удалось создать файл: " + e.getMessage());
+            }
+        } else {
+            FileBackedTaskManager.restore(this, fileName);
         }
     }
 
+    public File getTmpFile() {
+        return tmpFile;
+    }
+
     @Override
-    public void save() throws ManagerSaveException {
+    public void save() {
         try (Writer fileWriter = new FileWriter(tmpFile)) {
             fileWriter.write("type, taskId, name, description, status, epicId\n");
         } catch (IOException e) {
@@ -72,8 +86,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
         return file.isFile();
     }
 
-    @Override
-    public void restore(String fileName) throws ManagerReadException {
+    private static String[] getLines(String  fileName) {
         File file = new File(fileName);
         String[] tasks;
 
@@ -83,9 +96,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
             throw new ManagerReadException(e.getMessage());
         }
 
-        if (tasks.length <= FIRST_TASK_POSITION) {
-            throw new ManagerReadException("Пустой файл с задачами!");
-        }
+        return tasks;
+    }
+
+    public static void restore(FileBackedTaskManager fileBackedTaskManager, String fileName) {
+        String[] tasks = getLines(fileName);
 
         for (int i = FIRST_TASK_POSITION; i < tasks.length; i++)  {
             String[] task = tasks[i].split(",");
@@ -97,7 +112,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
                             task[TASK_DESCRIPTION],
                             Integer.parseInt(task[TASK_ID]),
                             task[TASK_STATUS]);
-                    super.addNewTask(newTask);
+                    fileBackedTaskManager.addNewTask(newTask);
                     break;
                 case EPIC:
                     Epic newEpic = new Epic(EPIC,
@@ -105,7 +120,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
                             task[TASK_DESCRIPTION],
                             Integer.parseInt(task[TASK_ID]),
                             task[TASK_STATUS]);
-                    super.addNewEpic(newEpic);
+                    fileBackedTaskManager.addNewEpic(newEpic);
                     break;
                 case SUBTASK:
                     SubTask newSubTask = new SubTask(SUBTASK,
@@ -114,7 +129,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
                             task[TASK_DESCRIPTION],
                             Integer.parseInt(task[TASK_ID]),
                             task[TASK_STATUS]);
-                    super.addNewSubtask(newSubTask);
+                    fileBackedTaskManager.addNewSubtask(newSubTask);
                     break;
                 default:
                     throw new ManagerReadException("Некорректный тип задачи!");

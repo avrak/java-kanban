@@ -1,7 +1,7 @@
 package service;
 
-import interfaces.FileTaskManager;
 import interfaces.HistoryManager;
+import interfaces.TaskManager;
 
 public class Managers {
 
@@ -12,7 +12,8 @@ public class Managers {
         return new InMemoryHistoryManager();
     }
 
-    public static FileTaskManager getDefaulf() {
-        return new FileBackedTaskManager();
+
+    public static TaskManager getDefaulf(String fileName) {
+        return new FileBackedTaskManager(fileName);
     }
 }
