@@ -1,15 +1,21 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class SubTask extends Task {
     private int epicId;
 
-    public SubTask(TaskType type, int epicId, String name, String description) {
-        super(type, name, description);
-        this.epicId = epicId;
+     public SubTask(TaskType type, Epic epic, String name, String description, Duration duration, LocalDateTime startTime) {
+        super(type, name, description, duration, startTime);
+        this.epicId = epic.getTaskId();
+        if (epic.getEndTime() == null || epic.getEndTime().isAfter(startTime.plus(duration))) {
+            epic.setEndDateTime(startTime.plus(duration));
+        }
     }
 
-    public SubTask(TaskType type, int epicId, String name, String description, int subTaskId, String status) {
-        super(type, name, description, subTaskId, status);
+    public SubTask(TaskType type, int epicId, String name, String description, int subTaskId, String status, Duration duration, LocalDateTime startTime) {
+        super(type, name, description, subTaskId, status, duration, startTime);
         this.epicId = epicId;
     }
 
@@ -19,14 +25,7 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return getType()
-                + "{"
-                + "taskId=" + getTaskId()
-                + ", epicId=" + epicId
-                + ", name='" + getName() + '\''
-                + ", description='" + getDescription() + '\''
-                + ", status=" + getStatus()
-                + '}';
+        return getType() + "{epicId=" + epicId + ", " + super.toString();
     }
 
     @Override

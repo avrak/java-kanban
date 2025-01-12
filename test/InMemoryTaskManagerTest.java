@@ -4,6 +4,8 @@ import service.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +29,9 @@ public class InMemoryTaskManagerTest {
         historyManager = (InMemoryHistoryManager) Managers.getDefaultHistory();
         epic = new Epic(TaskType.EPIC, "new Epic test", "Test addNewTask description");
         taskManager.addNewEpic(epic);
-        subTask = new SubTask(TaskType.SUBTASK, epic.getTaskId(),"new addNewTask test", "Test addNewTask description");
+        subTask = new SubTask(TaskType.SUBTASK, epic,"new SubTask test", "Test addNewTask description", Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 13:00", (Task.DATE_TIME_FORMATTER)));
         taskManager.addNewSubtask(subTask);
-        task = new Task(TaskType.TASK, "new Task test", "Test addNewTask description");
+        task = new Task(TaskType.TASK, "new Task test", "Test addNewTask description", Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 12:30", (Task.DATE_TIME_FORMATTER)));
         taskManager.addNewTask(task);
 
     }
@@ -267,6 +269,67 @@ public class InMemoryTaskManagerTest {
 
         String restoredData = taskManager.getTasks().toString() + taskManager.getEpics().toString() + taskManager.getSubTasks();
 
-        assertTrue(inMemoryData.equals(restoredData), "Данные из файла восстановлены некорректно");
+        assertEquals(inMemoryData, restoredData, "Данные из файла восстановлены некорректно");
+    }
+
+    @Test
+    public void checkTasksPriority() {
+
+        ArrayList<Task> prioritizedList = new ArrayList<>(taskManager.getPrioritizedTasks());
+        assertTrue(prioritizedList.get(0).toString().contains("new Task test")
+                &&prioritizedList.get(1).toString().contains("new SubTask test")
+                ,"Некорректная приоритизация");
+
+        Task newTask = new Task(TaskType.TASK, "new Task test 2", "Test addNewTask description"
+                , Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 12:45", (Task.DATE_TIME_FORMATTER)));
+        taskManager.addNewTask(newTask);
+
+        prioritizedList = new ArrayList<>(taskManager.getPrioritizedTasks());
+
+        assertTrue(prioritizedList.get(0).toString().contains("new Task test")
+                && prioritizedList.get(1).toString().contains("new Task test 2")
+                && prioritizedList.get(2).toString().contains("new SubTask test")
+                , "Некорректная приоритизация");
+    }
+
+    @Test
+    public void checkIntersections() {
+        try {
+            Task newTask = new Task(TaskType.TASK, "new Task test 2", "Test addNewTask description"
+                    , Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 12:35", (Task.DATE_TIME_FORMATTER)));
+            taskManager.addNewTask(newTask);
+        } catch (UserInputException e) {
+            assertTrue(e.getMessage().contains("Новая задача пересекается по времени с задачами"));
+        }
+    }
+
+    @Test
+    public void checkEpiccStatus() {
+        SubTask newSubTask = new SubTask(TaskType.SUBTASK, epic,"new SubTask test", "Test addNewTask description", Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 15:00", (Task.DATE_TIME_FORMATTER)));
+        taskManager.addNewSubtask(newSubTask);
+
+        assertEquals(TaskStatus.NEW, epic.getStatus());
+
+        epic.getSubTasksIds()
+                .forEach(id -> {
+                    taskManager.getSubTask(id).setStatus(TaskStatus.DONE);
+                    taskManager.updateSubtask(taskManager.getSubTask(id));
+                });
+
+        assertEquals(TaskStatus.DONE, epic.getStatus());
+
+        subTask.setStatus(TaskStatus.NEW);
+        taskManager.updateSubtask(subTask);
+
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+
+        subTask.setStatus(TaskStatus.IN_PROGRESS);
+        taskManager.updateSubtask(subTask);
+
+        newSubTask.setStatus(TaskStatus.IN_PROGRESS);
+        taskManager.updateSubtask(newSubTask);
+
+        assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
+
     }
 }
