@@ -1,4 +1,5 @@
 import model.*;
+import service.FileBackedTaskManager;
 import service.InMemoryTaskManager;
 
 import java.util.ArrayList;
@@ -11,8 +12,11 @@ public class Main {
         System.out.println("Поехали!");
 
         Scanner scanner = new Scanner(System.in);
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
 
+        System.out.print("Введите абсолютный путь к файлу с данными: ");
+        String fileName = scanner.next();
+
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(fileName);
 
         while (true) {
             Menu.printMenu();
@@ -60,7 +64,6 @@ public class Main {
                 case 3: // Получение задачи по идентификатору: 3
                     System.out.print("Введите ID задачи: ");
                     taskId = scanner.nextInt();
-                    //taskManager.printTask(taskId);
                     Task  task = taskManager.getTask(taskId);
                     Epic  epic = taskManager.getEpic(taskId);
                     SubTask subTask = taskManager.getSubTask(taskId);
@@ -75,7 +78,6 @@ public class Main {
                     }
                     break;
                 case 4: // Создать задачу: 4
-                    //taskManager.addTask();
                     int epicId = 0;
                     name = setTaskName(scanner);
                     description = setTaskDescription(scanner);

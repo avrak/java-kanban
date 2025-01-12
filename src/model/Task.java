@@ -18,6 +18,15 @@ public class Task extends TaskId {
         this.status = TaskStatus.NEW;
     }
 
+    public Task(TaskType type, String name, String description, int taskId, String status) {
+        this.taskId = taskId;
+        this.type = type;
+        this.name = name;
+        this.description = description;
+        this.status = TaskStatus.valueOf(status);
+    }
+
+
     public TaskStatus getStatus() {
         return status;
     }
@@ -59,6 +68,10 @@ public class Task extends TaskId {
                 + ", description='" + description + '\''
                 + ", status=" + status
                 + '}';
+    }
+
+    public String toFileString() {
+        return String.format("%s,%s,%s,%s,%s", type, taskId, name, description, status);
     }
 
     @Override

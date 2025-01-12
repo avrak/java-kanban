@@ -1,6 +1,9 @@
 import model.*;
 import service.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 public class InMemoryTaskManagerTest {
+    public static final String EMPTY_FILE = " ";
 
-    private InMemoryTaskManager taskManager;
+    private FileBackedTaskManager taskManager;
     private InMemoryHistoryManager historyManager;
     private Epic epic;
     private SubTask subTask;
@@ -19,7 +23,7 @@ public class InMemoryTaskManagerTest {
 
     @BeforeEach
     public void beforeEach() {
-        taskManager = (InMemoryTaskManager) Managers.getDefaulf();
+        taskManager = (FileBackedTaskManager) Managers.getDefaulf(EMPTY_FILE);
         historyManager = (InMemoryHistoryManager) Managers.getDefaultHistory();
         epic = new Epic(TaskType.EPIC, "new Epic test", "Test addNewTask description");
         taskManager.addNewEpic(epic);
@@ -94,7 +98,7 @@ public class InMemoryTaskManagerTest {
     @Test
     public void checkManagers() {
 
-        assertNotNull(Managers.getDefaulf(), "Менеджер задач не создан.");
+        assertNotNull(Managers.getDefaulf(EMPTY_FILE), "Менеджер задач не создан.");
         assertNotNull(Managers.getDefaultHistory(), "Менеджер истории не создан.");
     }
 
@@ -232,5 +236,37 @@ public class InMemoryTaskManagerTest {
         ArrayList<Task> history = (ArrayList<Task>) historyManager.getHistory();
 
         assertFalse(history.contains(task), "Задача не удалена из истории");
+    }
+
+    @Test
+    public void checkFileCreated() {
+        assertTrue(taskManager.getTmpFile().isFile(), "Файл с данными не создан");
+    }
+
+    @Test
+    public void checkFileWasWritten() {
+        File file = taskManager.getTmpFile();
+
+        try {
+            String data = Files.readString(file.toPath());
+            assertTrue(data.contains(task.toFileString()), "Задача с типом TASK не сохранена в файл с данными");
+            assertTrue(data.contains(epic.toFileString()), "Задача с типом EPIC не сохранена в файл с данными");
+            assertTrue(data.contains(subTask.toFileString()), "Задача с типом SUBTASK не сохранена в файл с данными");
+        } catch (IOException e) {
+            fail("Не удалось прочитать файл с данными");
+        }
+    }
+
+    @Test
+    public void checkDataWasRestoredFromFile() {
+        String inMemoryData = taskManager.getTasks().toString() + taskManager.getEpics().toString() + taskManager.getSubTasks();
+        File file = taskManager.getTmpFile();
+
+        taskManager =  (FileBackedTaskManager) Managers.getDefaulf(EMPTY_FILE);
+        FileBackedTaskManager.restore(taskManager, file.getAbsolutePath());
+
+        String restoredData = taskManager.getTasks().toString() + taskManager.getEpics().toString() + taskManager.getSubTasks();
+
+        assertTrue(inMemoryData.equals(restoredData), "Данные из файла восстановлены некорректно");
     }
 }
