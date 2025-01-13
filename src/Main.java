@@ -100,9 +100,6 @@ public class Main {
                         }
                     }
 
-                    LocalDateTime taskStartTime;
-                    Duration duration;
-
                     switch (taskType) {
                         case TASK:
                             Task newTask = new Task(TaskType.TASK, name, description, setTaskDuration(scanner), setTaskStartTime(scanner));
@@ -126,18 +123,24 @@ public class Main {
                     SubTask updatingSubTask = taskManager.getSubTasks().get(taskId);
 
                     if (updatingTask != null) {
+                        taskManager.removePrioritizedTask(updatingTask);
                         updatingTask.setName(setTaskName(scanner));
                         updatingTask.setDescription(setTaskDescription(scanner));
                         updatingTask.setStatus(setTaskStatus(scanner));
+                        updatingTask.setDuration(setTaskDuration(scanner));
+                        updatingTask.setStartTime(setTaskStartTime(scanner));
                         taskManager.updateTask(updatingTask);
                     } else if (updatingEpic != null) {
                         updatingEpic.setName(setTaskName(scanner));
                         updatingEpic.setDescription(setTaskDescription(scanner));
                         taskManager.updateEpic(updatingEpic);
                     } else if (updatingSubTask != null) {
+                        taskManager.removePrioritizedTask(updatingSubTask);
                         updatingSubTask.setName(setTaskName(scanner));
                         updatingSubTask.setDescription(setTaskDescription(scanner));
                         updatingSubTask.setStatus(setTaskStatus(scanner));
+                        updatingSubTask.setDuration(setTaskDuration(scanner));
+                        updatingSubTask.setStartTime(setTaskStartTime(scanner));
                         taskManager.updateSubtask(updatingSubTask);
                     } else {
                         System.out.println("Задача не найдена");

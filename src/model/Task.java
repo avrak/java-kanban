@@ -73,6 +73,14 @@ public class Task extends TaskId {
         this.status = status;
     }
 
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     public Duration getDuration() {
         return duration;
     }

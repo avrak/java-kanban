@@ -304,7 +304,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void checkEpiccStatus() {
+    public void checkEpicStatus() {
         SubTask newSubTask = new SubTask(TaskType.SUBTASK, epic,"new SubTask test", "Test addNewTask description", Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 15:00", (Task.DATE_TIME_FORMATTER)));
         taskManager.addNewSubtask(newSubTask);
 

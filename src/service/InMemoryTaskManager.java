@@ -120,12 +120,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addNewTask(Task task) {
-        if (intersectedTasksIds(task).isEmpty()) {
-            tasksList.put(task.getTaskId(), task);
-            prioritizedTasksList.add(task);
-        } else {
-            throw new UserInputException("Новая задача пересекается по времени с задачами ID: " + intersectedTasksIds(task));
+        if (!intersectedTasksIds(task).isEmpty()) {
+            throw new UserInputException("Новая задача пересекается по времени с задачами ID: " +
+                    intersectedTasksIds(task));
         }
+
+        tasksList.put(task.getTaskId(), task);
+        prioritizedTasksList.add(task);
     }
 
     @Override
@@ -149,6 +150,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {
         tasksList.put(task.getTaskId(), task);
+        prioritizedTasksList.add(task);
     }
 
     @Override
@@ -159,6 +161,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(SubTask subTask) {
         subTasksList.put(subTask.getTaskId(), subTask);
+        prioritizedTasksList.add(subTask);
         updateEpicStatus(getEpics().get(subTask.getEpicId()));
     }
 
@@ -237,13 +240,12 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(inMemoryHistoryManager.getHistory());
     }
 
+    @Override
     public List<Task> getPrioritizedTasks() {
-        ArrayList<Task> newPrioritizedTasksList = new ArrayList<>(prioritizedTasksList.size());
-        newPrioritizedTasksList.addAll(prioritizedTasksList);
-        return newPrioritizedTasksList;
+        return new ArrayList<>(prioritizedTasksList);
     }
 
-    public List<Integer> intersectedTasksIds(Task newTask) {
+    private List<Integer> intersectedTasksIds(Task newTask) {
         return prioritizedTasksList
                 .stream()
                 .filter(task -> (// начало нового отрезка в пределах старого
@@ -262,5 +264,9 @@ public class InMemoryTaskManager implements TaskManager {
                 )
                 .map(Task::getTaskId)
                 .collect(Collectors.toList());
+    }
+
+    public void removePrioritizedTask(Task task) {
+        prioritizedTasksList.remove(task);
     }
 }
