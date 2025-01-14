@@ -9,4 +9,12 @@ public class TaskId {
     public static int getNewTaskId() {
         return taskId++;
     }
+
+    public static int getCurrentTaskId() {
+        return taskId;
+    }
+
+    public  void setNewTaskId(int taskId) {
+        TaskId.taskId = taskId;
+    }
 }

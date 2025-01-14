@@ -8,21 +8,25 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static model.TaskType.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements FileTaskManager {
+
+    public static final String BACKED_FILE_NAME = "backed_file";
     public static final int FIRST_TASK_POSITION = 1;
     public static final int TASK_TYPE = 0;
     public static final int TASK_ID = 1;
     public static final int TASK_NAME = 2;
     public static final int TASK_DESCRIPTION = 3;
     public static final int TASK_STATUS = 4;
-    public static final int TASK_EPIC_ID = 5;
-
-    public static final String BACKED_FILE_NAME = "backed_file";
+    public static final int TASK_DURATION = 5;
+    public static final int TASK_START_TIME = 6;
+    public static final int SUBTASK_EPIC_ID = 7;
 
     private File tmpFile;
 
@@ -52,7 +56,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
     @Override
     public void save() {
         try (Writer fileWriter = new FileWriter(tmpFile)) {
-            fileWriter.write("type, taskId, name, description, status, epicId\n");
+            fileWriter.write("type, taskId, name, description, status, epicId, duration, startTime\n");
         } catch (IOException e) {
             throw new ManagerSaveException(e.getMessage());
         }
@@ -111,8 +115,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
                             task[TASK_NAME],
                             task[TASK_DESCRIPTION],
                             Integer.parseInt(task[TASK_ID]),
-                            task[TASK_STATUS]);
+                            task[TASK_STATUS],
+                            Duration.ofMinutes(Long.parseLong(task[TASK_DURATION])),
+                            LocalDateTime.parse(task[TASK_START_TIME], Task.DATE_TIME_FORMATTER));
                     fileBackedTaskManager.addNewTask(newTask);
+
                     break;
                 case EPIC:
                     Epic newEpic = new Epic(EPIC,
@@ -124,12 +131,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements FileTa
                     break;
                 case SUBTASK:
                     SubTask newSubTask = new SubTask(SUBTASK,
-                            Integer.parseInt(task[TASK_EPIC_ID]),
+                            Integer.parseInt(task[SUBTASK_EPIC_ID]),
                             task[TASK_NAME],
                             task[TASK_DESCRIPTION],
                             Integer.parseInt(task[TASK_ID]),
-                            task[TASK_STATUS]);
-                    fileBackedTaskManager.addNewSubtask(newSubTask);
+                            task[TASK_STATUS],
+                            Duration.ofMinutes(Long.parseLong(task[TASK_DURATION])),
+                            LocalDateTime.parse(task[TASK_START_TIME], Task.DATE_TIME_FORMATTER));
+                        fileBackedTaskManager.addNewSubtask(newSubTask);
                     break;
                 default:
                     throw new ManagerReadException("Некорректный тип задачи!");

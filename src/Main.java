@@ -2,6 +2,9 @@ import model.*;
 import service.FileBackedTaskManager;
 import service.InMemoryTaskManager;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -12,6 +15,7 @@ public class Main {
         System.out.println("Поехали!");
 
         Scanner scanner = new Scanner(System.in);
+        scanner.useDelimiter("\\n");
 
         System.out.print("Введите абсолютный путь к файлу с данными: ");
         String fileName = scanner.next();
@@ -98,7 +102,7 @@ public class Main {
 
                     switch (taskType) {
                         case TASK:
-                            Task newTask = new Task(TaskType.TASK, name, description);
+                            Task newTask = new Task(TaskType.TASK, name, description, setTaskDuration(scanner), setTaskStartTime(scanner));
                             taskManager.addNewTask(newTask);
                             break;
                         case EPIC:
@@ -106,7 +110,7 @@ public class Main {
                             taskManager.addNewEpic(newEpic);
                             break;
                         case SUBTASK:
-                            SubTask newSubTask = new SubTask(TaskType.SUBTASK, epicId, name, description);
+                            SubTask newSubTask = new SubTask(TaskType.SUBTASK, taskManager.getEpic(epicId), name, description, setTaskDuration(scanner), setTaskStartTime(scanner));
                             taskManager.addNewSubtask(newSubTask);
                             break;
                     }
@@ -119,18 +123,24 @@ public class Main {
                     SubTask updatingSubTask = taskManager.getSubTasks().get(taskId);
 
                     if (updatingTask != null) {
+                        taskManager.removePrioritizedTask(updatingTask);
                         updatingTask.setName(setTaskName(scanner));
                         updatingTask.setDescription(setTaskDescription(scanner));
                         updatingTask.setStatus(setTaskStatus(scanner));
+                        updatingTask.setDuration(setTaskDuration(scanner));
+                        updatingTask.setStartTime(setTaskStartTime(scanner));
                         taskManager.updateTask(updatingTask);
                     } else if (updatingEpic != null) {
                         updatingEpic.setName(setTaskName(scanner));
                         updatingEpic.setDescription(setTaskDescription(scanner));
                         taskManager.updateEpic(updatingEpic);
                     } else if (updatingSubTask != null) {
+                        taskManager.removePrioritizedTask(updatingSubTask);
                         updatingSubTask.setName(setTaskName(scanner));
                         updatingSubTask.setDescription(setTaskDescription(scanner));
                         updatingSubTask.setStatus(setTaskStatus(scanner));
+                        updatingSubTask.setDuration(setTaskDuration(scanner));
+                        updatingSubTask.setStartTime(setTaskStartTime(scanner));
                         taskManager.updateSubtask(updatingSubTask);
                     } else {
                         System.out.println("Задача не найдена");
@@ -150,6 +160,10 @@ public class Main {
                     break;
                 case 7: // История просмотра задач: 7
                     System.out.println(taskManager.getHistory());
+                    break;
+                case 8: // Получить список задач в порядке приоритета: 8
+                    taskManager.getPrioritizedTasks()
+                            .forEach(System.out::println);
                     break;
                 case 0: // Выход: 0
                     return;
@@ -189,7 +203,19 @@ public class Main {
         } else {
             return -1;
         }
+    }
 
+    public static LocalDateTime setTaskStartTime(Scanner scanner) {
+        final DateTimeFormatter format = DateTimeFormatter.ofPattern(Task.DATE_TIME_FORMAT);
+        System.out.printf("Введите дату и время начала задачи в формате %s -> ", Task.DATE_TIME_FORMAT);
+        String startDateTimeString = scanner.next();
+        return LocalDateTime.parse(startDateTimeString, format);
+    }
+
+    private static Duration setTaskDuration(Scanner scanner) {
+        System.out.print("Введите время выполнения задачи в минутах: ");
+        long durationInMinutes = scanner.nextLong();
+        return Duration.ofMinutes(durationInMinutes);
     }
 
     public static Integer setTaskId(Scanner scanner) {
@@ -208,4 +234,6 @@ public class Main {
         System.out.println("Некорректный статус, попробуйте ещё");
         return null;
     }
+
+
 }
