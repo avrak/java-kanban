@@ -2,7 +2,6 @@ package service;
 
 import interfaces.HistoryManager;
 import interfaces.TaskManager;
-import interfaces.HttpTaskManager;
 
 public class Managers {
 
