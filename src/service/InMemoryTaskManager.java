@@ -74,7 +74,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public HashMap<Integer, SubTask> getSubTasks() {
-        return new HashMap<>(subTasksList);
+            return new HashMap<>(subTasksList);
     }
 
     @Override

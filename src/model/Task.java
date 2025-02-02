@@ -57,11 +57,11 @@ public class Task extends TaskId {
         this.name = name;
     }
 
-    protected String getName() {
+    public String getName() {
         return name;
     }
 
-    protected String getDescription() {
+    public String getDescription() {
         return description;
     }
 
