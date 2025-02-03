@@ -7,7 +7,6 @@ import model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Task> tasksList;
     private final HashMap<Integer, Epic> epicsList;
@@ -268,5 +267,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void removePrioritizedTask(Task task) {
         prioritizedTasksList.remove(task);
+    }
+
+    public static Scanner getScanner() {
+        Scanner scanner = new Scanner(System.in);
+        scanner.useDelimiter("\\n");
+        return scanner;
+    }
+
+    public static String setFileName() {
+        Scanner scanner = getScanner();
+        System.out.print("Введите абсолютный путь к файлу с данными: ");
+        return scanner.next();
     }
 }

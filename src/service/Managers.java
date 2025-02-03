@@ -3,6 +3,8 @@ package service;
 import interfaces.HistoryManager;
 import interfaces.TaskManager;
 
+import java.io.IOException;
+
 public class Managers {
 
     public Managers() {
@@ -17,7 +19,7 @@ public class Managers {
         return new FileBackedTaskManager(fileName);
     }
 
-    public static HttpTaskServer getDefaultHttp(String fileName) {
+    public static HttpTaskServer getDefaultHttp(String fileName) throws IOException {
         return new HttpTaskServer(fileName);
     }
 }

@@ -58,7 +58,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @BeforeAll
-    public static void beforeAll() {
+    public static void beforeAll() throws IOException {
         httpTaskManager = Managers.getDefaultHttp(EMPTY_FILE);
         try {
             httpTaskManager.start();
@@ -437,7 +437,6 @@ public class InMemoryTaskManagerTest {
                         && subTask.getDuration().equals(Duration.ofMinutes(10))
                         && subTask.getStartTime().isEqual(LocalDateTime.parse("01-01-2025 14:00", (Task.DATE_TIME_FORMATTER))))
                 , "Подзадача создана некорректно.");
-
     }
 
 }

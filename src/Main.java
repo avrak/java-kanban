@@ -14,11 +14,9 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        Scanner scanner = new Scanner(System.in);
-        scanner.useDelimiter("\\n");
+        Scanner scanner = InMemoryTaskManager.getScanner();
 
-        System.out.print("Введите абсолютный путь к файлу с данными: ");
-        String fileName = scanner.next();
+        String fileName = InMemoryTaskManager.setFileName();
 
         FileBackedTaskManager taskManager = new FileBackedTaskManager(fileName);
 
