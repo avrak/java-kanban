@@ -1,30 +1,48 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.*;
-import service.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import service.FileBackedTaskManager;
+import service.HttpTaskServer;
+import service.InMemoryHistoryManager;
+import service.Managers;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-
 public class InMemoryTaskManagerTest {
-    public static final String EMPTY_FILE = " ";
+    public static final String EMPTY_FILE = "";
 
     private FileBackedTaskManager taskManager;
     private InMemoryHistoryManager historyManager;
     private Epic epic;
     private SubTask subTask;
     private Task task;
+    Gson gson = new GsonBuilder()
+            .registerTypeAdapter(Duration.class, new DurationAdapter())
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+            .create();
+    static HttpTaskServer httpTaskManager;
+    private Epic httpEpic;
+    private Epic httpEpicWithSubTasks;
+    private SubTask httpSubTask;
+    private Task httpTask;
 
     @BeforeEach
-    public void beforeEach() {
+    public void beforeEach() throws IOException {
         taskManager = (FileBackedTaskManager) Managers.getDefaulf(EMPTY_FILE);
         historyManager = (InMemoryHistoryManager) Managers.getDefaultHistory();
         epic = new Epic(TaskType.EPIC, "new Epic test", "Test addNewTask description");
@@ -33,7 +51,20 @@ public class InMemoryTaskManagerTest {
         taskManager.addNewSubtask(subTask);
         task = new Task(TaskType.TASK, "new Task test", "Test addNewTask description", Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 12:30", (Task.DATE_TIME_FORMATTER)));
         taskManager.addNewTask(task);
+        httpEpic = new Epic(TaskType.EPIC, "new HTTP Epic test", "Test HTTP addNewEpic description");
+        httpEpicWithSubTasks = new Epic(TaskType.EPIC, "new HTTP Epic test with Subtasks", "Test HTTP addNewEpic with Subtasks description");
+        httpSubTask = new SubTask(TaskType.SUBTASK, httpEpic,"new HTTP SubTask test", "Test addNewTask description", Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 14:00", (Task.DATE_TIME_FORMATTER)));
+        httpTask = new Task(TaskType.TASK, "new HTTP Task test", "Test HTTP addNewTask description", Duration.ofMinutes(10), LocalDateTime.parse("01-01-2025 11:30", (Task.DATE_TIME_FORMATTER)));
+    }
 
+    @BeforeAll
+    public static void beforeAll() throws IOException {
+        httpTaskManager = Managers.getDefaultHttp(EMPTY_FILE);
+        try {
+            httpTaskManager.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -330,6 +361,82 @@ public class InMemoryTaskManagerTest {
         taskManager.updateSubtask(newSubTask);
 
         assertEquals(TaskStatus.IN_PROGRESS, epic.getStatus());
-
     }
+
+    private int sendRequestGetStatusCode(String requestJson, String entity) {
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            URI url = URI.create("http://localhost:8080/" + entity);
+            HttpRequest request = HttpRequest.newBuilder().uri(url).POST(HttpRequest.BodyPublishers.ofString(requestJson)).build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return response.statusCode();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testAddTaskHttp() throws IOException, InterruptedException {
+        String taskJson = gson.toJson(httpTask);
+        int statusCode = sendRequestGetStatusCode(taskJson, "tasks");
+
+        assertEquals(201, statusCode, "Некорректный код ответа при создании задачи.");
+
+        ArrayList<Task> tasksList = new ArrayList<>(httpTaskManager.getHttpBackedTaskManager().getTasks().values());
+
+        assertNotNull(tasksList, "Задачи не возвращаются.");
+        assertEquals(1, tasksList.size(), "Неверное количество задач.");
+
+        assertNotNull(tasksList.stream().filter(task -> task.getName().equals("new HTTP Task test")
+                && task.getDescription().equals("Test HTTP addNewTask description")
+                && task.getStatus() == TaskStatus.NEW
+                && task.getDuration().equals(Duration.ofMinutes(10))
+                && task.getStartTime().isEqual(LocalDateTime.parse("01-01-2025 11:30", (Task.DATE_TIME_FORMATTER))))
+                , "Задача не найдена.");
+    }
+
+    @Test
+    public void testAddEpicHttp() throws IOException, InterruptedException {
+       String taskEpic = gson.toJson(httpEpic);
+        int statusCode = sendRequestGetStatusCode(taskEpic, "epics");
+
+        assertEquals(201, statusCode, "Некорректный код ответа при создании задачи.");
+
+        ArrayList<Epic> epicsList = new ArrayList<>(httpTaskManager.getHttpBackedTaskManager().getEpics().values());
+
+        assertNotNull(epicsList, "Эпики не возвращаются.");
+        assertEquals(1, epicsList.size(), "Неверное количество эпиков.");
+
+        Epic createdHttpEpic = epicsList.stream().filter(newEpic -> newEpic.getName().equals("new HTTP Epic test")
+                        && newEpic.getDescription().equals("Test HTTP addNewEpic description"))
+                .toList()
+                .getFirst();
+
+        assertNotNull(createdHttpEpic, "Эпик создан некорректно.");
+
+        httpSubTask = new SubTask(TaskType.SUBTASK
+                , createdHttpEpic
+                ,"new HTTP SubTask test"
+                , "Test addNewTask description"
+                , Duration.ofMinutes(10)
+                , LocalDateTime.parse("01-01-2025 14:00", (Task.DATE_TIME_FORMATTER)));
+        String subTaskJson = gson.toJson(httpSubTask);
+
+        statusCode = sendRequestGetStatusCode(subTaskJson, "subtasks");
+
+        assertEquals(201, statusCode, "Некорректный код ответа при создании подзадачи.");
+
+        ArrayList<Task> subTasksList = new ArrayList<>(httpTaskManager.getHttpBackedTaskManager().getSubTasks().values());
+
+        assertNotNull(subTasksList, "Подзадачи не возвращаются.");
+        assertEquals(1, subTasksList.size(), "Неверное количество подзадач.");
+
+        assertNotNull(subTasksList.stream().filter(subTask -> subTask.getName().equals("new HTTP Task test")
+                        && subTask.getDescription().equals("Test HTTP addNewTask description")
+                        && subTask.getStatus() == TaskStatus.NEW
+                        && subTask.getDuration().equals(Duration.ofMinutes(10))
+                        && subTask.getStartTime().isEqual(LocalDateTime.parse("01-01-2025 14:00", (Task.DATE_TIME_FORMATTER))))
+                , "Подзадача создана некорректно.");
+    }
+
 }
